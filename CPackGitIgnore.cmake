@@ -11,7 +11,9 @@ block()
         endforeach()
     endif()
 
-    list(APPEND ignore_files /[.]git/)
+    list(APPEND ignore_files "\.git/")
+    list(APPEND ignore_files "\.git$")
+    list(APPEND ignore_files "\.gitmodules$")
 
     set(CPACK_SOURCE_IGNORE_FILES ${ignore_files} PARENT_SCOPE)
 endblock()
