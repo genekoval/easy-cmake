@@ -11,6 +11,12 @@ function(enable_asan)
     endif()
 
     foreach(target ${targets})
+        get_target_property(target_type ${target} TYPE)
+
+        if(target_type STREQUAL "UTILITY")
+            continue()
+        endif()
+
         target_compile_options(${target}
             PRIVATE $<$<CONFIG:Debug>:${ASAN_FLAGS}>
         )
