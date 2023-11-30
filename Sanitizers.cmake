@@ -13,7 +13,10 @@ function(enable_asan)
     foreach(target ${targets})
         get_target_property(target_type ${target} TYPE)
 
-        if(target_type STREQUAL "UTILITY")
+        if(
+            target_type STREQUAL INTERFACE_LIBRARY OR
+            target_type STREQUAL UTILITY
+        )
             continue()
         endif()
 
