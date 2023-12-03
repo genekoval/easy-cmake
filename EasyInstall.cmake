@@ -9,42 +9,16 @@ macro(EASY_INSTALL)
 
     set(PROJECT_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
 
-    if(EXISTS ${PROJECT_INCLUDE_DIR})
-        foreach(target ${ARGN})
-            get_target_property(target_type ${target} TYPE)
+    foreach(target ${ARGN})
+        get_target_property(target_type ${target} TYPE)
 
-            if(target_type STREQUAL EXECUTABLE)
-                target_include_directories(${target} PRIVATE
-                    ${PROJECT_INCLUDE_DIR}
-                )
-            elseif(
-                target_type STREQUAL STATIC_LIBRARY OR
-                target_type STREQUAL SHARED_LIBRARY
+        if(target_type STREQUAL SHARED_LIBRARY)
+            set_target_properties(${target} PROPERTIES
+                VERSION ${PROJECT_VERSION}
+                SOVERSION ${PROJECT_VERSION_MAJOR}
             )
-                target_include_directories(${target} PUBLIC
-                    "$<BUILD_INTERFACE:${PROJECT_INCLUDE_DIR}>"
-                    "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
-                )
-
-                file(GLOB_RECURSE headers ${PROJECT_INCLUDE_DIR}/${target}/*)
-                set_target_properties(${target} PROPERTIES
-                    VERSION ${PROJECT_VERSION}
-                    SOVERSION ${PROJECT_VERSION_MAJOR}
-                    PUBLIC_HEADER "${headers}"
-                )
-            elseif(target_type STREQUAL INTERFACE_LIBRARY)
-                target_include_directories(${target} INTERFACE
-                    "$<BUILD_INTERFACE:${PROJECT_INCLUDE_DIR}>"
-                    "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
-                )
-
-                file(GLOB_RECURSE headers ${PROJECT_INCLUDE_DIR}/${target}/*)
-                set_target_properties(${target} PROPERTIES
-                    PUBLIC_HEADER "${headers}"
-                )
-            endif()
-        endforeach()
-    endif()
+        endif()
+    endforeach()
 
     set(CMAKE_INSTALL_MODDIR "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")
 
@@ -58,7 +32,7 @@ macro(EASY_INSTALL)
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-        PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}"
+        FILE_SET HEADERS
     )
 
     export(
