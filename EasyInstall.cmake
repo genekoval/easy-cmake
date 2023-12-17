@@ -7,8 +7,6 @@ macro(EASY_INSTALL)
     include(CMakePackageConfigHelpers)
     include(GNUInstallDirs)
 
-    set(PROJECT_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
-
     foreach(target ${ARGN})
         get_target_property(target_type ${target} TYPE)
 
