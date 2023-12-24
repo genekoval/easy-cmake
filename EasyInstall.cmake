@@ -3,11 +3,19 @@ set(
     "${CMAKE_CURRENT_LIST_DIR}/EasyInstallConfig.cmake.in"
 )
 
-macro(EASY_INSTALL)
+macro(easy_install)
+    set(options)
+    set(one_value_keywords)
+    set(multi_value_keywords TARGETS DEPENDENCIES)
+
+    cmake_parse_arguments(EASY_INSTALL
+        "${options}" "${one_value_keywords}" "${multi_value_keywords}" ${ARGN}
+    )
+
     include(CMakePackageConfigHelpers)
     include(GNUInstallDirs)
 
-    foreach(target ${ARGN})
+    foreach(target ${EASY_INSTALL_TARGETS})
         get_target_property(target_type ${target} TYPE)
 
         if(target_type STREQUAL SHARED_LIBRARY)
@@ -25,7 +33,7 @@ macro(EASY_INSTALL)
     set(targets_export_name ${PROJECT_NAME}-targets)
 
     install(
-        TARGETS ${ARGN}
+        TARGETS ${EASY_INSTALL_TARGETS}
         EXPORT ${targets_export_name}
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
